@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="pt-PT" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fa">
+  <meta name="description" content="Simulador de transferências orbitais, cálculos de Hohmann, exercícios e guia de física.">
+  <title>Orbital Mission Lab</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="theme.css?v=20261111b">
+  <script src="vendor/katex/katex.min.js" defer></script>
+  <script src="math-format.js?v=20261111a" defer></script>
+  <script src="physics.js?v=20261111a" defer></script>
+  <link rel="stylesheet" href="guide.css?v=20261111c">
+  <script src="guide.js?v=20261111a" defer></script>
+  <script src="app.js?v=20261111e" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Saltar para o conteúdo</a>
+  <header class="topbar">
+    <a class="brand" href="#simulador" aria-label="Orbital, simulador">
+      <svg viewBox="0 0 40 40" width="36" height="36" aria-hidden="true"><circle cx="20" cy="20" r="4" fill="currentColor"/><ellipse cx="20" cy="20" rx="18" ry="9" transform="rotate(-35 20 20)" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="32" cy="9" r="3" fill="#ff956b"/></svg>
+      <span>orbital<span class="brand-period">.</span></span><span class="brand-lab">MISSION LAB</span>
+    </a>
+    <nav class="navigation" aria-label="Navegação principal">
+      <a href="#simulador" data-view="simulador" aria-current="page">Simulador</a>
+      <a href="#aprender" data-view="aprender">Aprender</a>
+      <a href="#desafios" data-view="desafios">Desafios</a>
+    </nav>
+    <div class="header-actions"><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Ativar modo escuro" aria-pressed="false"><span id="theme-symbol" aria-hidden="true">☾</span><span id="theme-label">Modo escuro</span></button><button type="button" class="model-button" id="open-model" aria-label="Abrir guia de física" aria-haspopup="dialog"><span class="info-icon" aria-hidden="true">i</span><span>Guia de física</span></button></div>
+  </header>
+  <main id="main" tabindex="-1">
+    <section id="view-simulador" class="view" aria-labelledby="mission-title">
+      <div class="page-heading"><div><h1 id="mission-title">Como chegamos a <span>Marte?</span></h1></div><span class="lesson-chip">Transferência de Hohmann</span></div>
+      <div class="metrics" aria-label="Resultados da transferência">
+        <div class="metric"><span>Tempo de viagem</span><div><strong id="metric-time">258,9</strong><span>dias</span></div></div>
+        <div class="metric"><span>Tamanho da elipse <span class="metric-hint">/ semi-eixo maior</span></span><div><strong id="metric-a">1,262</strong><span>UA</span></div><small>Metade do eixo maior da elipse</small></div>
+        <div class="metric"><span>Fase ideal de lançamento</span><div><strong class="angle-metric"><span id="metric-phase">44,3</span><span class="degree">°</span></strong></div><small id="metric-phase-caption">Marte à frente da Terra</small></div>
+        <div class="metric"><span>Repetição da janela ideal</span><div><strong id="metric-window">780</strong><span>dias, até o alinhamento se repetir</span></div></div>
+      </div>
+      <div class="mission-workspace">
+        <section class="orbit-panel" aria-labelledby="map-title">
+          <div class="map-topline"><div><span class="eyebrow">MAPA ORBITAL</span><h2 id="map-title">Terra <span class="route-arrow">→</span> Marte</h2></div><span class="status-pill" id="mission-status">Pronta para partir</span></div>
+          <div class="map-frame"><p id="non-hohmann-notice" class="map-warning" role="status" hidden>Fora da fase ideal: esta trajetória não é uma transferência de Hohmann.</p>
+            <svg id="orbit-map" viewBox="0 0 800 510" role="img" aria-labelledby="orbit-title orbit-description">
+              <title id="orbit-title">Transferência orbital entre a Terra e Marte</title><desc id="orbit-description">Órbitas circulares à volta do Sol e uma trajetória elíptica. Usa os controlos de reprodução para acompanhar a nave e os planetas.</desc>
+              <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#8796ae" stroke-opacity=".07" stroke-width="1"/></pattern><radialGradient id="sun-halo"><stop stop-color="#ffb16c" stop-opacity=".18"/><stop offset="1" stop-color="#ffb16c" stop-opacity="0"/></radialGradient></defs>
+              <rect width="800" height="510" fill="url(#grid)"/>
+              <g id="orbit-geometry"></g>
+              <g id="orbit-moving"></g>
+            </svg>
+            <div class="map-corner"><span class="crosshair">+</span> REFERENCIAL HELIOCÊNTRICO<br><span id="map-scale">Distâncias à escala · corpos simbólicos</span></div>
+            <div class="map-legend"><span><i id="origin-key" class="legend-dot earth"></i><span id="origin-legend">Terra</span></span><span><i id="destination-key" class="legend-dot mars"></i><span id="destination-legend">Marte</span></span><span><i class="legend-line"></i>Transferência</span></div>
+          </div>
+          <div class="flight-readout"><div><span>TEMPO DE MISSÃO</span><strong id="flight-day">Dia 0 <small>/ 259</small></strong></div><div><span>VELOCIDADE DA NAVE</span><strong id="flight-speed">32,73 <small>km/s</small></strong></div><div><span>DISTÂNCIA AO SOL</span><strong id="flight-radius">1,00 <small>UA</small></strong></div></div>
+          <div class="playback"><button class="play-button" id="play" type="button"><span id="play-symbol" aria-hidden="true">▶</span><span id="play-label">Iniciar missão</span></button><button class="icon-button" id="reset" type="button" aria-label="Voltar ao início" title="Voltar ao início">↺</button><div class="timeline-control"><label class="sr-only" for="timeline">Progresso da viagem</label><input id="timeline" type="range" min="0" max="1000" value="0"><div class="timeline-labels"><span>PARTIDA</span><span>CHEGADA</span></div></div><label class="speed-picker"><span class="sr-only">Velocidade da animação</span><select id="speed"><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option></select></label></div>
+        </section>
+        <aside class="control-panel" aria-labelledby="controls-title">
+          <div class="panel-heading"><h2 id="controls-title">Parâmetros da missão</h2></div>
+          <div class="route-inputs"><label for="origin">Origem<select id="origin"></select></label><span aria-hidden="true">↓</span><label for="destination">Destino<select id="destination"></select></label></div>
+          <p id="route-error" class="field-error" role="alert" hidden></p>
+          <div class="control-group"><div class="control-title"><label for="phase">Ângulo entre os planetas</label><output id="phase-value" for="phase">44,3°</output></div><input type="range" id="phase" min="-180" max="180" step="0.1" value="44.3"><div class="range-labels"><span>−180°</span><span>0°</span><span>+180°</span></div><p>Este ângulo na partida chama-se <strong>fase</strong>. Positivo: destino à frente. Negativo: atrás.</p><button type="button" id="align" class="text-button">◎ Usar a fase ideal</button></div>
+          <div class="control-group mass-control"><label for="mass">Massa da nave</label><div class="unit-input"><input id="mass" type="number" min="100" max="10000" step="100" value="1000" inputmode="decimal"><span>kg</span></div><p id="mass-error" class="field-error" role="alert" hidden></p><p class="dv-readout">Δv total: <strong id="control-dv">—</strong></p><div id="energy-details" hidden><p>Variações de energia cinética: <strong id="control-energy">—</strong> <span class="energy-expression">(|ΔE₁| + |ΔE₂|)</span>.</p><p>O cálculo assume massa constante e não desconta o combustível consumido. Numa missão real, o consumo de combustível reduz a massa do foguetão.</p></div></div>
+        </aside>
+      </div>
+      <section class="transfer-summary" aria-labelledby="transfer-type"><h2 id="transfer-type">Transferência de Hohmann</h2><p id="transfer-comparison"></p><details><summary>Como é escolhida a trajetória?</summary><p id="transfer-policy"></p><p>Δv soma as duas mudanças do vetor velocidade, incluindo a direção. É o critério usado para comparar as manobras; não calculamos o consumo de combustível. As fórmulas de «Aprender» e «Desafios» referem-se à transferência de Hohmann.</p></details></section>
+      <div class="section-heading stage-heading"><div><h2>Momentos da transferência</h2><p>Duas manobras breves, separadas por um longo voo sem propulsão.</p></div></div>
+      <div class="mission-steps" aria-label="Etapas da transferência">
+        <article class="mission-step"><span class="step-number">01</span><div><strong>Manobra de partida</strong><p id="departure-step">Variação de velocidade na partida.</p><small>Impulso inicial · duração desprezada no modelo</small></div></article>
+        <article class="mission-step"><span class="step-number">02</span><div><strong>Voo sem propulsão</strong><p>Entre as duas manobras, só atua a gravidade do Sol neste modelo.</p><small>Desde o fim da manobra de partida até à manobra de chegada</small></div></article>
+        <article class="mission-step"><span class="step-number">03</span><div><strong>Chegada à órbita de destino</strong><p id="arrival-step">Estado imediatamente antes da segunda manobra.</p><small>Impulso final · duração desprezada no modelo</small></div></article>
+      </div>
+      <section class="experiments" aria-labelledby="experiments-title"><div class="section-heading"><div><h2 id="experiments-title">Comparar cenários</h2></div></div><div class="experiment-grid"><button class="experiment-card" type="button" id="experiment-phase"><strong>Fase de lançamento</strong><p>Desvia a fase em 25° e compara a nova trajetória, o tempo e o Δv.</p><span class="experiment-link">Alterar fase <span>↗</span></span></button><button class="experiment-card" type="button" id="experiment-mass"><strong>Massa da nave</strong><p>Compara uma nave de 1 000 kg com uma de 2 000 kg.</p><span class="experiment-link">Comparar massas <span>↗</span></span></button><a class="experiment-card" href="#desafios"><strong>Exercícios de Hohmann</strong><p>Tempo de viagem, fase de lançamento e efeito da massa.</p><span class="experiment-link">Abrir desafios <span>↗</span></span></a></div><p id="experiment-result" class="experiment-result" role="status" hidden></p></section>
+    </section>
+    <section id="view-aprender" class="view" aria-labelledby="learn-title" hidden><div class="page-heading"><div><h1 id="learn-title">Transferência de <span>Hohmann</span></h1><p>Calcula a transferência de Hohmann entre os planetas escolhidos.</p></div><a href="#simulador" class="secondary-button">Voltar ao simulador ↗</a></div><div id="learning-content"></div></section>
+    <section id="view-desafios" class="view" aria-labelledby="challenge-title" hidden><div class="page-heading"><div><h1 id="challenge-title">Desafios</h1></div><button type="button" class="secondary-button" id="new-challenge">↻ Nova missão</button></div><div id="challenge-content"></div></section>
+    <footer><strong>Orbital Lab</strong></footer>
+  </main>
+  <dialog id="model-dialog" class="physics-guide" aria-labelledby="model-title">
+    <header class="guide-header">
+      <div><h2 id="model-title">Guia de física</h2></div>
+      <button class="icon-button" type="button" id="close-model" aria-label="Fechar guia">×</button>
+    </header>
+    <div class="guide-tabs" role="tablist" aria-label="Secções do guia">
+      <button type="button" id="guide-tab-fundamentals" role="tab" aria-controls="guide-fundamentals" aria-selected="true">Conceitos fundamentais</button>
+      <button type="button" id="guide-tab-engineering" role="tab" aria-controls="guide-engineering" aria-selected="false" tabindex="-1">Engenharia</button>
+      <button type="button" id="guide-tab-model" role="tab" aria-controls="guide-model" aria-selected="false" tabindex="-1">Modelo computacional</button>
+    </div>
+    <div class="guide-body">
+      <section id="guide-fundamentals" role="tabpanel" aria-labelledby="guide-tab-fundamentals" tabindex="0">
+        <p class="guide-intro">Consideramos um corpo de massa <span data-tex="m"></span> a orbitar o Sol, de massa <span data-tex="M"></span>, com <span data-tex="m\ll M"></span>.</p>
+        <details class="guide-card" open>
+          <summary>Unidades e grandezas</summary>
+          <div class="guide-card-body">
+            <p>A unidade astronómica (UA) é uma unidade de comprimento próxima da distância média entre os centros da Terra e do Sol. O seu valor definido é:</p>
+            <div class="guide-equation" data-tex="1\,\mathrm{UA}=149\,597\,870{,}7\,\mathrm{km}" data-display="true"></div>
+            <div class="guide-equation" data-tex="1\,\mathrm{UA}=1{,}495978707\times10^{11}\,\mathrm{m}" data-display="true"></div>
+            <dl class="guide-definitions">
+              <div><dt><span data-tex="r"></span></dt><dd>Distância ao centro do Sol, não à superfície. Numa órbita circular, é o raio.</dd></div>
+              <div><dt><span data-tex="m,\ M"></span></dt><dd>Massa da nave e massa do Sol, respetivamente, em kg.</dd></div>
+              <div><dt><span data-tex="G"></span></dt><dd>Constante da gravitação universal: <span data-tex="G\approx6{,}67430\times10^{-11}\,\mathrm{m^3\,kg^{-1}\,s^{-2}}"></span>.</dd></div>
+              <div><dt><span data-tex="\mu=GM"></span></dt><dd>Parâmetro gravitacional do Sol. Nas contas desta app usamos <span data-tex="\mu=1{,}32712440018\times10^{11}\,\mathrm{km^3/s^2}"></span>.</dd></div>
+              <div><dt><span data-tex="v,\ T,\ t"></span></dt><dd>Rapidez orbital, período de uma volta completa e tempo decorrido. O tempo de viagem é apenas parte do período da órbita de transferência.</dd></div>
+            </dl>
+            <p class="guide-note">Usa unidades compatíveis: com <span data-tex="\mu"></span> em km³/s² e distâncias em km, obténs velocidades em km/s e tempos em segundos. Para forças em N e energias em J, usa metros, segundos e quilogramas.</p>
+            <div class="guide-equation" data-tex="1\,\mathrm{dia}=86\,400\,\mathrm{s}\qquad 1\,\mathrm{MJ}=10^6\,\mathrm{J}" data-display="true"></div>
+          </div>
+        </details>
+        <details class="guide-card">
+          <summary>Gravitação e energia potencial</summary>
+          <div class="guide-card-body">
+            <p>A força gravítica aponta para o Sol. Se <span data-tex="\hat{\mathbf e}_r"></span> é o vetor unitário que aponta do Sol para a nave, o sinal negativo indica o sentido contrário:</p>
+            <div class="guide-equation" data-tex="\vec F_g=-\frac{GMm}{r^2}\,\hat{\mathbf e}_r" data-display="true"></div>
+            <p>A força mede-se em newtons (N). A energia potencial gravítica, escolhendo zero a uma distância infinita, é:</p>
+            <div class="guide-equation" data-tex="U(r)=-\frac{GMm}{r},\qquad U(\infty)=0" data-display="true"></div>
+            <p><span data-tex="U"></span> mede-se em joules (J). Aumentar a distância torna a energia potencial menos negativa: é preciso fornecer energia para afastar a nave do Sol.</p>
+          </div>
+        </details>
+        <details class="guide-card">
+          <summary>Órbita circular: velocidade, período e energia</summary>
+          <div class="guide-card-body">
+            <p>Num movimento circular uniforme, a força resultante tem módulo <span data-tex="\frac{mv^2}{r}"></span> e aponta para o centro. A gravidade fornece essa força; não existe uma força centrípeta adicional.</p>
+            <div class="guide-equation" data-tex="\frac{GMm}{r^2}=\frac{mv^2}{r}\quad\Longrightarrow\quad v_{\mathrm{circ}}=\sqrt{\frac{GM}{r}}" data-display="true"></div>
+            <p>Uma volta percorre <span data-tex="2\pi r"></span>. Logo, o período é:</p>
+            <div class="guide-equation" data-tex="T=\frac{2\pi r}{v_{\mathrm{circ}}}=2\pi\sqrt{\frac{r^3}{GM}}" data-display="true"></div>
+            <p>A energia cinética <span data-tex="E_c"></span> é positiva. A energia mecânica total <span data-tex="E_T"></span> soma a energia cinética e a potencial:</p>
+            <div class="guide-equation" data-tex="E_c=\frac12 mv^2=\frac{GMm}{2r}=-\frac{U}{2}" data-display="true"></div>
+            <div class="guide-equation" data-tex="E_T=E_c+U=-\frac{GMm}{2r}=\frac{U}{2}<0" data-display="true"></div>
+            <p>Com esta escolha do zero da energia, <span data-tex="E_T<0"></span> corresponde a uma órbita ligada. Numa órbita circular mais afastada, a rapidez é menor, mas a energia total é maior (menos negativa).</p>
+            <figure class="guide-figure guide-energy-figure">
+              <svg viewBox="0 0 480 260" role="img" aria-labelledby="guide-energy-title guide-energy-desc">
+                <title id="guide-energy-title">Energia total de órbitas circulares em função do raio</title>
+                <desc id="guide-energy-desc">Curva negativa proporcional a menos um sobre r: sobe quando o raio aumenta e aproxima-se de zero por baixo. Cada ponto representa uma órbita circular diferente.</desc>
+                <path class="diagram-axis" d="M64 232V24 M64 62H432"/>
+                <text x="43" y="31" text-anchor="end">Eₜ</text>
+                <text x="447" y="70">r</text>
+                <text x="48" y="70" text-anchor="end">0</text>
+                <path class="diagram-accent" d="M84.00 222.00 L85.50 210.85 L87.11 200.47 L88.84 190.82 L90.70 181.84 L92.70 173.48 L94.85 165.71 L97.17 158.48 L99.65 151.76 L102.32 145.50 L105.20 139.68 L108.28 134.26 L111.60 129.23 L115.17 124.54 L119.00 120.18 L123.12 116.12 L127.55 112.35 L132.32 108.84 L137.43 105.58 L142.94 102.54 L148.85 99.71 L155.21 97.08 L162.05 94.64 L169.39 92.36 L177.29 90.25 L185.78 88.28 L194.91 86.45 L204.71 84.74 L215.26 83.16 L226.59 81.68 L238.78 80.31 L251.87 79.03 L265.95 77.85 L281.08 76.74 L297.35 75.71 L314.84 74.76 L333.63 73.87 L353.84 73.04 L375.56 72.27 L398.90 71.55 L424.00 70.89"/>
+              </svg>
+              <figcaption>Quanto maior o raio, menos negativa é a energia total. Cada ponto representa uma órbita circular diferente, com as mesmas massas.</figcaption>
+            </figure>
+          </div>
+        </details>
+        <details class="guide-card">
+          <summary>Posição angular e movimento dos planetas</summary>
+          <div class="guide-card-body">
+            <p>No modelo circular, o ângulo <span data-tex="\theta"></span> cresce uniformemente a partir da posição inicial <span data-tex="\theta_0"></span>:</p>
+            <div class="guide-equation" data-tex="\theta(t)=\theta_0+\omega t,\qquad \omega=\frac{2\pi}{T}" data-display="true"></div>
+            <p><span data-tex="\omega"></span> é a velocidade angular, em rad/s se <span data-tex="T"></span> está em segundos. Para trabalhar em graus e dias, usamos o símbolo <span data-tex="n"></span>:</p>
+            <div class="guide-equation" data-tex="n=\frac{360^\circ}{T_{\mathrm{dias}}},\qquad \theta(t)=\theta_0+nt" data-display="true"></div>
+            <p>Os ângulos repetem-se a cada <span data-tex="360^\circ"></span>. Estas expressões de movimento uniforme aplicam-se aos planetas circulares do modelo, não à nave na elipse.</p>
+          </div>
+        </details>
+        <details class="guide-card">
+          <summary>Elipse: geometria, período e energia</summary>
+          <div class="guide-card-body">
+            <figure class="guide-figure guide-ellipse-figure">
+              <svg viewBox="0 0 520 350" role="img" aria-labelledby="guide-ellipse-title guide-ellipse-desc">
+                <title id="guide-ellipse-title">Eixos e focos de uma elipse</title>
+                <desc id="guide-ellipse-desc">Elipse centrada em O. O semi-eixo maior a vai do centro ao extremo direito e o semi-eixo menor b vai do centro ao extremo superior. Os focos estão a uma distância c do centro; o Sol ocupa F1, não o centro.</desc>
+                <path class="diagram-axis" d="M34 180H486 M260 38V335"/>
+                <ellipse class="diagram-orbit" cx="260" cy="180" rx="170" ry="102"/>
+                <path class="diagram-accent" d="M260 180H430 M260 180V78"/>
+                <path class="diagram-dashed" d="M124 191V218 M260 191V218"/>
+                <path class="diagram-dimension" d="M124 218V232 M124 225H260 M260 218V232"/>
+                <circle class="diagram-sun" cx="124" cy="180" r="7"/>
+                <circle class="diagram-dot" cx="396" cy="180" r="4"/>
+                <text x="124" y="158" text-anchor="middle">F₁</text>
+                <text x="396" y="158" text-anchor="middle">F₂</text>
+                <text x="273" y="211">O</text>
+                <text x="345" y="162" text-anchor="middle">a</text>
+                <text x="244" y="129" text-anchor="end">b</text>
+                <text x="192" y="255" text-anchor="middle">c</text>
+                <text class="ellipse-coordinate" x="76" y="158" text-anchor="end">(−a, 0)</text>
+                <text class="ellipse-coordinate" x="445" y="158">(a, 0)</text>
+                <text class="ellipse-coordinate" x="276" y="56">(0, b)</text>
+                <text class="ellipse-coordinate" x="276" y="321">(0, −b)</text>
+              </svg>
+              <dl class="guide-diagram-key">
+                <div><dt>O</dt><dd>Centro da elipse</dd></div>
+                <div><dt>F₁</dt><dd>Foco ocupado pelo Sol</dd></div>
+                <div><dt>F₂</dt><dd>Segundo foco</dd></div>
+              </dl>
+              <figcaption>A distância da nave ao Sol é medida a partir de F₁, não do centro O.</figcaption>
+            </figure>
+            <dl class="guide-definitions">
+              <div><dt><span data-tex="a,\ b"></span></dt><dd>Semi-eixo maior e semi-eixo menor: metade dos comprimentos dos dois eixos.</dd></div>
+              <div><dt><span data-tex="c"></span></dt><dd>Distância do centro a cada foco: <span data-tex="c=\sqrt{a^2-b^2}"></span>.</dd></div>
+              <div><dt><span data-tex="e=\frac{c}{a}"></span></dt><dd>Excentricidade, sem unidades: <span data-tex="0\le e<1"></span>. Uma circunferência tem <span data-tex="e=0"></span>.</dd></div>
+            </dl>
+            <p>A soma das distâncias de qualquer ponto da elipse aos dois focos é <span data-tex="2a"></span>. As distâncias mínima (periélio) e máxima (afélio) ao Sol são:</p>
+            <div class="guide-equation" data-tex="r_p=a(1-e),\qquad r_a=a(1+e)" data-display="true"></div>
+            <p>Nas fórmulas do <strong>período</strong> e da <strong>energia total</strong> da órbita circular, substituímos o raio por <span data-tex="a"></span>:</p>
+            <div class="guide-equation" data-tex="T=2\pi\sqrt{\frac{a^3}{GM}},\qquad E_T=-\frac{GMm}{2a}" data-display="true"></div>
+            <p>Durante o voo sem propulsão, <span data-tex="E_T"></span> mantém-se constante. A rapidez e as energias cinética e potencial variam com <span data-tex="r"></span>. Não se substitui <span data-tex="r"></span> por <span data-tex="a"></span> na expressão da energia potencial instantânea.</p>
+          </div>
+        </details>
+        <div class="guide-sources"><span>Referências</span><a href="https://openstax.org/books/university-physics-volume-1/pages/13-4-satellite-orbits-and-energy" target="_blank" rel="noopener noreferrer">OpenStax · Órbitas e energia ↗</a><a href="https://openstax.org/books/university-physics-volume-1/pages/13-5-keplers-laws-of-planetary-motion" target="_blank" rel="noopener noreferrer">OpenStax · Leis de Kepler ↗</a><a href="https://ssd.jpl.nasa.gov/astro_par.html" target="_blank" rel="noopener noreferrer">NASA/JPL · Unidades e constantes ↗</a></div>
+      </section>
+      <section id="guide-engineering" role="tabpanel" aria-labelledby="guide-tab-engineering" tabindex="0" hidden>
+        <p class="guide-intro">Os índices <span data-tex="1"></span> e <span data-tex="2"></span> indicam a origem e o destino; todas as velocidades são medidas em relação ao Sol.</p>
+        <details class="guide-card" open>
+          <summary>A transferência de Hohmann</summary>
+          <div class="guide-card-body">
+            <p>Uma elipse tangente às duas órbitas circulares permite passar de uma para a outra com duas manobras breves. A nave percorre metade da elipse entre os pontos de tangência.</p>
+            <figure class="guide-figure guide-transfer-figure">
+              <div class="guide-transfer-layout">
+              <svg viewBox="0 0 460 430" role="img" aria-labelledby="guide-transfer-title guide-transfer-desc">
+                <title id="guide-transfer-title">Transferência de Hohmann da Terra para Marte</title>
+                <desc id="guide-transfer-desc">T é a Terra na partida, à direita do Sol. M0 é Marte na partida, cerca de 44 graus à frente. A nave segue o arco laranja e encontra Marte em M1, à esquerda, 259 dias depois. As duas setas tangenciais representam as manobras. A dimensão 2a liga as posições de partida e chegada.</desc>
+                <defs><marker id="guide-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0L6 3L0 6Z" fill="var(--orange)"/></marker></defs>
+                <circle class="diagram-orbit" cx="230" cy="200" r="100"/>
+                <circle class="diagram-dashed" cx="230" cy="200" r="152.368"/>
+                <path class="diagram-accent" d="M330 200 A126.184 123.437 0 0 0 77.632 200"/>
+                <path class="diagram-axis" d="M230 200H330 M230 200L338.97 93.45"/>
+                <path class="diagram-accent" d="M267 200 A37 37 0 0 0 256.46 174.14"/>
+                <text class="transfer-symbol" x="276" y="183">φ</text>
+                <circle class="diagram-sun" cx="230" cy="200" r="9"/>
+                <text class="transfer-symbol" x="230" y="235" text-anchor="middle">Sol</text>
+                <circle class="diagram-planet" cx="330" cy="200" r="6"/>
+                <circle class="diagram-sun" cx="338.97" cy="93.45" r="6"/>
+                <circle class="diagram-arrival" cx="77.632" cy="200" r="8"/>
+                <path class="diagram-accent" d="M330 188V145" marker-end="url(#guide-arrow)"/>
+                <path class="diagram-accent" d="M77.632 213V260" marker-end="url(#guide-arrow)"/>
+                <text class="transfer-point-label" x="348" y="221">T</text>
+                <text class="transfer-point-label" x="354" y="80">M₀</text>
+                <text class="transfer-point-label" x="30" y="206">M₁</text>
+                <text class="transfer-burn-label" x="340" y="176">Δv₁</text>
+                <text class="transfer-burn-label" x="30" y="254">Δv₂</text>
+                <path class="diagram-axis" d="M77.632 374V392 M77.632 383H330 M330 374V392"/>
+                <text class="transfer-symbol" x="203.816" y="416" text-anchor="middle">2a = r₁ + r₂</text>
+              </svg>
+              <div class="guide-transfer-key">
+                <dl>
+                  <div><dt class="transfer-earth">T</dt><dd>Terra na partida</dd></div>
+                  <div><dt>M₀</dt><dd>Marte na partida</dd></div>
+                  <div><dt>M₁</dt><dd>Encontro com Marte</dd></div>
+                </dl>
+                <div class="guide-orbit-key"><span class="orbit-key-transfer"></span>Trajetória da nave</div>
+                <div class="guide-orbit-key"><span class="orbit-key-earth"></span>Órbita da Terra</div>
+                <div class="guide-orbit-key"><span class="orbit-key-mars"></span>Órbita de Marte</div>
+              </div>
+              </div>
+              <figcaption>Terra–Marte · <span data-tex="\varphi"></span> indica a fase na partida. As setas <span data-tex="\Delta v_1"></span> e <span data-tex="\Delta v_2"></span> representam as duas manobras. Os símbolos dos corpos não estão à escala.</figcaption>
+            </figure>
+            <div class="guide-equation" data-tex="a=\frac{r_1+r_2}{2},\qquad t_H=\frac{T}{2}=\pi\sqrt{\frac{a^3}{\mu}}" data-display="true"></div>
+            <p><span data-tex="r_1,r_2"></span> são os raios das órbitas circulares e <span data-tex="t_H"></span> é o tempo de viagem de Hohmann. Para Terra–Marte, Hohmann minimiza o <span data-tex="\Delta v"></span> entre transferências ideais de dois impulsos entre estas órbitas circulares coplanares. Não é uma garantia de mínimo universal quando se admitem outras estratégias.</p>
+          </div>
+        </details>
+        <details class="guide-card">
+          <summary>Como calcular as duas manobras</summary>
+          <div class="guide-card-body">
+            <p>Conservar a energia na elipse permite calcular a rapidez em qualquer distância <span data-tex="r"></span>:</p>
+            <div class="guide-equation" data-tex="\frac12 mv^2-\frac{\mu m}{r}=-\frac{\mu m}{2a}" data-display="true"></div>
+            <div class="guide-equation" data-tex="v(r)=\sqrt{\mu\left(\frac{2}{r}-\frac{1}{a}\right)}" data-display="true"></div>
+            <p><span data-tex="v_1,v_2"></span> são as velocidades circulares da origem e do destino. <span data-tex="v_{t1},v_{t2}"></span> são as velocidades na elipse, logo depois da primeira manobra e logo antes da segunda:</p>
+            <div class="guide-equation" data-tex="v_1=\sqrt{\frac{\mu}{r_1}},\qquad v_2=\sqrt{\frac{\mu}{r_2}}" data-display="true"></div>
+            <div class="guide-equation" data-tex="v_{t1}=\sqrt{\mu\left(\frac{2}{r_1}-\frac{1}{a}\right)}" data-display="true"></div>
+            <div class="guide-equation" data-tex="v_{t2}=\sqrt{\mu\left(\frac{2}{r_2}-\frac{1}{a}\right)}" data-display="true"></div>
+            <p>Em Hohmann, as velocidades são tangentes e têm o mesmo sentido nos pontos de encontro. Os módulos das variações são:</p>
+            <div class="guide-equation" data-tex="\Delta v_1=|v_{t1}-v_1|,\qquad \Delta v_2=|v_2-v_{t2}|" data-display="true"></div>
+            <div class="guide-equation" data-tex="\Delta v_{\mathrm{total}}=\Delta v_1+\Delta v_2" data-display="true"></div>
+            <p>Na viagem Terra–Marte, ambas as manobras aumentam a rapidez heliocêntrica. Numa transferência para uma órbita interior, ambas a diminuem. O <span data-tex="\Delta v"></span> mede-se em km/s: é uma variação de velocidade, não uma aceleração.</p>
+            <p class="guide-note">Entre os impulsos, o motor está desligado e a gravidade curva o movimento. Fora de Hohmann, a direção também pode mudar e calcula-se o módulo da diferença dos <em>vetores</em> velocidade.</p>
+          </div>
+        </details>
+        <details class="guide-card">
+          <summary>Quando partir: fase e repetição da janela</summary>
+          <div class="guide-card-body">
+            <p>Colocamos a origem no ângulo zero no instante da partida. Na chegada de Hohmann, a nave está a <span data-tex="180^\circ"></span>. O destino deve percorrer o ângulo que falta durante a viagem:</p>
+            <div class="guide-equation" data-tex="\varphi+n_2t_H=180^\circ\pmod{360^\circ}" data-display="true"></div>
+            <div class="guide-equation" data-tex="\varphi=180^\circ-n_2t_H\pmod{360^\circ}" data-display="true"></div>
+            <p><span data-tex="n_2=\frac{360^\circ}{T_2}"></span> é a velocidade angular do destino, em graus/dia se <span data-tex="T_2"></span> está em dias. Aqui, usa também <span data-tex="t_H"></span> em dias. Reduzimos a fase ao intervalo de −180° a +180°; uma fase positiva coloca o destino à frente.</p>
+            <p>A separação angular entre os planetas varia à taxa <span data-tex="|n_1-n_2|"></span>. O período sinódico <span data-tex="S"></span> é o tempo até esse alinhamento se repetir:</p>
+            <div class="guide-equation" data-tex="S=\frac{360^\circ}{|n_1-n_2|}=\frac{1}{\left|\frac{1}{T_1}-\frac{1}{T_2}\right|}" data-display="true"></div>
+            <p>Para Terra–Marte, os resultados são aproximadamente 259 dias de viagem, 44,3° de fase e 780 dias entre alinhamentos. Isto não fornece uma data de lançamento real.</p>
+          </div>
+        </details>
+        <details class="guide-card">
+          <summary>Energia orbital e variação nas manobras</summary>
+          <div class="guide-card-body">
+            <p>A energia total da órbita <span data-tex="E_T=-\frac{\mu m}{2a}"></span> é diferente da soma das variações de energia cinética apresentada no simulador. Cada impulso muda a velocidade praticamente sem mudar a posição; nesse instante, a energia potencial não varia.</p>
+            <div class="guide-equation" data-tex="\Delta E_1=\frac12 m(v_{t1}^2-v_1^2)" data-display="true"></div>
+            <div class="guide-equation" data-tex="\Delta E_2=\frac12 m(v_2^2-v_{t2}^2)" data-display="true"></div>
+            <div class="guide-equation" data-tex="E_{\mathrm{apresentado}}=|\Delta E_1|+|\Delta E_2|" data-display="true"></div>
+            <p>Com velocidades em m/s e massa em kg, obténs J; divide por um milhão para obter MJ. Com velocidades em km/s e massa em kg, o resultado numérico destas expressões já corresponde a MJ.</p>
+            <p class="guide-note">Assumimos massa constante, sem descontar combustível. Este valor não mede energia química do motor nem consumo de combustível. No simulador, só é apresentado na fase de Hohmann.</p>
+          </div>
+        </details>
+        <details class="guide-card guide-worked">
+          <summary>Exemplo calculado · <span id="guide-example-route">Terra → Marte</span></summary>
+          <div class="guide-card-body">
+            <p id="guide-example-note"></p>
+            <div id="guide-example-data" class="guide-facts"></div>
+            <div id="guide-example-calculations"></div>
+          </div>
+        </details>
+        <div class="guide-sources"><span>Referências</span><a href="https://science.nasa.gov/learn/basics-of-space-flight/chapter4-1/" target="_blank" rel="noopener noreferrer">NASA · Trajetórias e transferências ↗</a><a href="https://www.jpl.nasa.gov/edu/resources/lesson-plan/lets-go-to-mars-calculating-launch-windows/" target="_blank" rel="noopener noreferrer">NASA/JPL · Calcular a janela de lançamento ↗</a></div>
+      </section>
+      <section id="guide-model" role="tabpanel" aria-labelledby="guide-tab-model" tabindex="0" hidden>
+        <p class="guide-intro">O simulador é um modelo heliocêntrico 2D para estudar transferências. Não é um planeador de missões reais.</p>
+        <div class="guide-model-grid">
+          <article class="guide-model-card"><h3>Parâmetros</h3><p>Origem, destino, massa da nave e fase inicial. Cada planeta tem um raio orbital fixo; as órbitas são circulares, no mesmo plano e percorridas no mesmo sentido.</p></article>
+          <article class="guide-model-card"><h3>Fase ideal</h3><p>Usamos as expressões analíticas de Hohmann do separador Engenharia. O controlo da fase tem passos de 0,1°: valores a até 0,05° da fase ideal são ajustados ao valor ideal exato.</p></article>
+          <article class="guide-model-card"><h3>Outras fases</h3><p>Resolvemos o problema de Lambert: ligar a posição de partida à posição futura do destino num tempo escolhido. Comparamos 201 tempos entre 0,4 e 2 vezes o tempo de Hohmann e refinamos a melhor região encontrada.</p></article>
+          <article class="guide-model-card"><h3>Critério de seleção</h3><p>Escolhemos o menor <span data-tex="\Delta v"></span> encontrado nessa procura, somando as duas mudanças vetoriais de velocidade. Só admitimos elipses prógradas, sem voltas completas e sem atravessar o Sol. Não é uma otimização global.</p></article>
+        </div>
+        <details class="guide-card">
+          <summary>Movimento da nave</summary>
+          <div class="guide-card-body">
+            <p>A rapidez da nave varia ao longo da elipse. A sua posição em cada instante é calculada a partir da equação de Kepler:</p>
+            <div class="guide-equation" data-tex="\mathcal M(t)=\mathcal M_0+\sqrt{\frac{\mu}{a^3}}\,t" data-display="true"></div>
+            <div class="guide-equation" data-tex="\mathcal M=\mathcal E-e\sin\mathcal E" data-display="true"></div>
+            <p><span data-tex="\mathcal M"></span> é a anomalia média e <span data-tex="\mathcal E"></span> a anomalia excêntrica: dois ângulos auxiliares, em radianos, usados no cálculo. Não são a massa do Sol nem a energia da órbita. <span data-tex="e"></span> é a excentricidade.</p>
+            <p>As velocidades dos planetas são angulares constantes. A rapidez da nave resulta da expressão <span data-tex="v^2=\mu\left(\frac{2}{r}-\frac{1}{a}\right)"></span>. Para resolver os exercícios de Hohmann, não precisas de resolver numericamente a equação de Kepler.</p>
+          </div>
+        </details>
+        <details class="guide-card" open>
+          <summary>Pressupostos e limites</summary>
+          <div class="guide-card-body">
+            <ul>
+              <li>Só atua a gravidade do Sol durante o voo. A massa da nave é constante e não altera a trajetória.</li>
+              <li>Há dois impulsos instantâneos. A animação começa depois da manobra de partida e termina antes da manobra de chegada. Não calcula tempos de queima nem correções de trajetória.</li>
+              <li>As velocidades e o <span data-tex="\Delta v"></span> são heliocêntricos. Não incluem descolagem, fuga à gravidade da Terra, captura por Marte ou aterragem.</li>
+              <li>Não usamos efemérides nem datas reais. Não incluímos inclinações orbitais, perturbações de outros corpos, assistências gravitacionais ou propulsão contínua.</li>
+              <li>As distâncias orbitais partilham a mesma escala no mapa; os símbolos dos corpos são ampliados para serem visíveis.</li>
+              <li>Uma solução de Lambert só é aceite se o erro de encontro calculado não ultrapassar 1 km. Isto é um critério numérico, não uma previsão da precisão de uma missão real.</li>
+              <li>«Aprender», «Desafios» e o exemplo deste guia usam sempre Hohmann, mesmo quando o simulador mostra uma trajetória alternativa.</li>
+              <li>Plutão está incluído como planeta anão para comparação.</li>
+            </ul>
+          </div>
+        </details>
+        <details class="guide-card">
+          <summary>Dados e unidades usados no código</summary>
+          <div class="guide-card-body">
+            <p>Os cálculos orbitais usam km, segundos e kg. As distâncias são convertidas para UA, os tempos para dias e as energias para MJ na apresentação. Os valores intermédios não são arredondados.</p>
+            <div class="guide-table-wrap" tabindex="0" aria-label="Tabela dos raios orbitais adotados"><table class="guide-table"><caption>Raios das órbitas circulares adotadas</caption><thead><tr><th scope="col">Corpo</th><th scope="col">Raio (UA)</th></tr></thead><tbody id="guide-planet-data"></tbody></table></div>
+            <p>Estes raios são aproximações fixas para o modelo educativo; os planetas reais descrevem órbitas elípticas. O parâmetro gravitacional adotado é o indicado em Conceitos fundamentais.</p>
+          </div>
+        </details>
+        <div class="guide-sources"><span>Referências</span><a href="https://godot.io.esa.int/docs/tutorials2/fundamentals/astro/03-lambert-problems.html" target="_blank" rel="noopener noreferrer">ESA · O problema de Lambert ↗</a><a href="https://www.youtube.com/watch?v=Si4OaDzziOg" target="_blank" rel="noopener noreferrer">Maggie Lieu · Transferência de Hohmann ↗</a></div>
+      </section>
+    </div>
+  </dialog>
+  <noscript><p class="noscript">Ativa o JavaScript no navegador para calcular e animar a missão.</p></noscript>
+</body>
+</html>

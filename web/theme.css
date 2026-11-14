@@ -1,0 +1,147 @@
+/* Shared scene colours keep the diagram legible in both themes. */
+:root {
+  --map-bg: #0f151d;
+  --map-text: #d5dce5;
+  --map-subtle: #a0acbb;
+  --map-axis: #526477;
+  --map-path: #d6b694;
+  --map-trail: #ffe0bc;
+  --map-ship: #fff5e5;
+}
+.header-actions { display: flex; align-items: center; gap: 20px; }
+.theme-toggle { display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 9px; font-size: .875rem; white-space: nowrap; }
+.theme-toggle:hover { background: var(--surface-up); }
+#theme-symbol { font-size: 1.1rem; line-height: 1; }
+.orbit-panel { background: var(--map-bg); }
+#orbit-map text { fill: var(--map-text); stroke: var(--map-bg); }
+.stage-heading { margin: 28px 0 12px; }
+.stage-heading p { margin-top: 8px; font-size: .875rem; }
+.stage-heading + .mission-steps { margin-top: 0; }
+.mission-step { align-items: flex-start; }
+.mission-step small { display: block; margin-top: 9px; font-size: .75rem; color: var(--muted); line-height: 1.5; }
+.propulsion-detail { display: flex; align-items: flex-start; gap: 18px; padding: 18px 20px; margin-top: 14px; border: 1px solid var(--line); background: var(--surface); border-radius: 12px; }
+.propulsion-badge { flex-shrink: 0; font-size: .875rem; color: var(--orange); font-weight: 600; }
+.propulsion-detail p { font-size: .875rem; line-height: 1.65; }
+footer { padding: 24px 0; }
+footer > strong { font-size: 1rem; color: var(--text); font-weight: 550; }
+
+/* Light is the default. Only a deliberate saved choice enables dark mode. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --surface-up: #edf1f6;
+  --line: #d9e0e9;
+  --text: #202c3d;
+  --muted: #566579;
+  --orange: #a84017;
+  --orange-dark: #fff0e8;
+  --blue: #2466a7;
+  --green: #256247;
+  --map-bg: #f8fafc;
+  --map-text: #24374d;
+  --map-subtle: #536880;
+  --map-axis: #8496aa;
+  --map-path: #99612f;
+  --map-trail: #9e4919;
+  --map-ship: #693515;
+}
+[data-theme="light"] .topbar { background: #fff; }
+[data-theme="light"] .navigation { background: #edf1f6; border-color: #e0e6ee; }
+[data-theme="light"] .navigation a { color: #506176; }
+[data-theme="light"] .navigation a:hover { color: #172d49; background: #e1e8f1; }
+[data-theme="light"] .navigation a[aria-current="page"] { background: #fff; color: #172d49; box-shadow: 0 1px 5px #1b33451a; }
+[data-theme="light"] .nav-count { color: #68768a; }
+[data-theme="light"] .metric div > span { color: #566579; }
+[data-theme="light"] .status-pill { color: #42576a; background: #eaf0f5; border-color: #cbd7e1; }
+[data-theme="light"] .status-pill.running { background: #fff0e5; color: #8d3d17; border-color: #e4b899; }
+[data-theme="light"] .map-corner,
+[data-theme="light"] .map-corner > span:last-child { color: #566b80; }
+[data-theme="light"] #orbit-geometry > circle[stroke] { stroke-opacity: .85; filter: brightness(.7); }
+[data-theme="light"] .flight-readout,
+[data-theme="light"] .playback { border-color: var(--line); }
+[data-theme="light"] .play-button { background: #b34b21; border-color: #b34b21; color: #fff; }
+[data-theme="light"] .play-button:hover { background: #963b17; border-color: #963b17; }
+[data-theme="light"] label { color: #35465b; }
+[data-theme="light"] select,
+[data-theme="light"] .speed-picker select,
+[data-theme="light"] .unit-input { background: #f5f7fb; color: #24364b; border-color: #c7d2df; }
+[data-theme="light"] .control-group p strong,
+[data-theme="light"] .mass-control p strong { color: #293b4f; }
+[data-theme="light"] .arrival-card { background: #edf7f0; border-color: #bad7c6; }
+[data-theme="light"] .arrival-card p { color: #365c47; }
+[data-theme="light"] .arrival-card.missed { background: #fff2e8; border-color: #e9c4a8; }
+[data-theme="light"] .missed .arrival-top,
+[data-theme="light"] .arrival-card.missed p { color: #864321; }
+[data-theme="light"] .arrival-distance { border-color: #ccdcd1; }
+[data-theme="light"] .mission-step.active { border-color: #d9a887; background: #fff4ec; }
+[data-theme="light"] .step-number { border-color: #bcc8d6; }
+[data-theme="light"] .active .step-number { border-color: #c7855d; }
+[data-theme="light"] .step-icon { color: #5e7187; }
+[data-theme="light"] .experiment-card:hover { border-color: #c98960; }
+[data-theme="light"] .experiment-link { color: #35485e; }
+[data-theme="light"] .experiment-result { color: #7c3b1c; background: #fff1e7; }
+[data-theme="light"] .map-explanation strong { color: #35465b; }
+[data-theme="light"] dialog { background: #fff; border-color: #cbd6e2; box-shadow: 0 25px 90px #152d4533; }
+[data-theme="light"] dialog::backdrop { background: #23354a66; }
+[data-theme="light"] dialog ul { color: #465b72; }
+[data-theme="light"] .math-equation { background: #f0f4f9; }
+[data-theme="light"] .substitution { color: #254f76; }
+[data-theme="light"] .secondary-button { background: #edf2f8; border-color: #c5d2e2; color: #2e455e; }
+[data-theme="light"] .secondary-button:hover { background: #dfe9f4; }
+[data-theme="light"] .challenge-tabs button[aria-pressed="true"] { color: #783a1c; border-color: #d7a17d; background: #fff0e5; }
+[data-theme="light"] .challenge-data { background: #f1f5fa; }
+[data-theme="light"] .option { color: #2d4259; }
+[data-theme="light"] .option:hover { border-color: #8c9eb3; }
+[data-theme="light"] .option:has(input:checked) { background: #fff3e9; border-color: #c9885c; }
+[data-theme="light"] .answer-item input { background: #fff; border-color: #aabccd; color: #24374d; }
+[data-theme="light"] .answer-item input[aria-invalid="true"] { border-color: #a54228; }
+[data-theme="light"] .field-error,
+[data-theme="light"] .answer-feedback { color: #9c3e23 !important; }
+[data-theme="light"] .answer-feedback.correct { color: #276248 !important; }
+[data-theme="light"] .feedback { background: #fff0e5; border-color: #dfb397; color: #773e20; }
+[data-theme="light"] .feedback.correct { background: #edf7f0; border-color: #acd0ba; color: #265c41; }
+[data-theme="light"] .score-track { background: #e0e6ef; }
+[data-theme="light"] .hint-box { background: #eaf2fa; color: #31516e; }
+[data-theme="light"] .challenge-formula { color: #314e6c; }
+[data-theme="light"] input[type="range"]::-webkit-slider-runnable-track { background: linear-gradient(to right,var(--orange) 0,var(--orange) var(--fill,0%),#c8d3df var(--fill,0%),#c8d3df 100%); }
+[data-theme="light"] input[type="range"]::-webkit-slider-thumb { border-color: #a34420; background: #a34420; }
+[data-theme="light"] input[type="range"]::-moz-range-track { background: #c8d3df; }
+[data-theme="light"] input[type="range"]::-moz-range-thumb { border-color: #a34420; background: #a34420; }
+@media(max-width:1100px) { .header-actions { gap: 12px; } .header-actions .model-button > span:last-child { display: none; } }
+@media(max-width:850px) { .theme-toggle { padding: 9px; } .propulsion-detail { flex-direction: column; gap: 8px; } }
+@media(max-width:580px) { .header-actions { gap: 10px; } .theme-toggle { padding: 7px 9px; font-size: .75rem; } .mission-step small { font-size: .75rem; } }
+/* Keep angular units attached to the number, not aligned as a separate baseline unit. */
+.metric .angle-metric { display: inline-flex; align-items: flex-start; gap: 0; }
+.metric .angle-metric #metric-phase { font: inherit; color: inherit; }
+.metric .angle-metric .degree { font-size: .65em; line-height: 1.05; color: inherit; margin-left: .04em; }
+.metric > div { min-width: 0; }
+.metric > div > span { line-height: 1.35; }
+.transfer-summary { margin: 24px 0; padding: 22px 26px; border: 1px solid var(--line); border-radius: 16px; }
+.transfer-summary h2 { font-size: 21px; margin: 0 0 10px; }
+.transfer-summary p { color: var(--muted); line-height: 1.65; }
+.transfer-summary summary { cursor: pointer; padding: 8px 0; }
+.dv-readout strong { font-size: 22px; color: var(--text); }
+
+/* Explanatory cards, not playback controls. */
+article.mission-step { cursor: default; }
+article.mission-step:hover { background: transparent; }
+/* Inline math follows the text flow; KaTeX fractions and scripts must not create scroll boxes. */
+.inline-math, [data-tex]:not([data-display="true"]) { display: inline; white-space: normal; overflow: visible; vertical-align: baseline; }
+.energy-expression { display: inline-block; white-space: nowrap; }
+.katex { font-size: 1.08em; color: inherit; }
+.math-equation { overflow: visible; }
+/* A long displayed equation has one horizontal scroll area, without arrow buttons. */
+.katex-display { margin: .65em 0; overflow-x: auto; overflow-y: hidden; padding: .2em .1em .4em; scrollbar-width: thin; }
+.katex-display::-webkit-scrollbar { height: 5px; }
+.katex-display::-webkit-scrollbar-button { display: none; }
+.katex-display::-webkit-scrollbar-thumb { background: var(--line); border-radius: 5px; }
+.katex-display > .katex { display: inline-block; min-width: 100%; text-align: left; }
+.substitution { font-family: inherit; overflow-wrap: normal; min-width: 0; }
+.substitution .katex-display { font-size: .95rem; }
+.challenge-formula { min-width: 0; }
+.challenge-formula .katex-display { font-size: 1rem; }
+.learning-layout > div, .concept-sidebar, .concept-card, .formula-body, .hint-box { min-width: 0; }
+.hint-formulas .katex-display { font-size: 1rem; }
+.map-warning { margin: 18px 24px 0; border-left: 3px solid var(--orange); padding: 8px 12px; color: var(--text); font-size: .8rem; line-height: 1.5; background: var(--surface); }
+@media(max-width:580px) { .map-warning { margin: 12px 16px 0; } .math-equation { font-size: 1.05rem; } }
