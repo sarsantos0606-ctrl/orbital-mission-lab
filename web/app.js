@@ -120,8 +120,7 @@
     updateFrame();
   }
   function mapPoint(x, y) {
-    const rotation = -18 * Math.PI / 180, s = geometry.scale;
-    return { x: 400 + (x * Math.cos(rotation) - y * Math.sin(rotation)) * s, y: 264 - (x * Math.sin(rotation) + y * Math.cos(rotation)) * s };
+    return { x: 400 + x * geometry.scale, y: 264 - y * geometry.scale };
   }
   function pathOf(points) { return points.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' '); }
   function drawGeometry() {
