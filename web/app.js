@@ -40,12 +40,6 @@
     });
     document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
     window.addEventListener('hashchange', navigate);
-    $('open-model').addEventListener('click', () => {
-      pause();
-      window.OrbitalGuide.refresh(state.mission, state.valid);
-      $('model-dialog').showModal();
-      document.body.classList.add('guide-open');
-    });
     $('close-model').addEventListener('click', () => $('model-dialog').close());
     $('model-dialog').addEventListener('click', event => { if (event.target === $('model-dialog')) { const rect = $('model-dialog').getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) $('model-dialog').close(); } });
   }
